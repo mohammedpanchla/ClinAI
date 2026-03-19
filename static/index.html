@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ClinAI — Clinical Diagnostic System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --white:   #ffffff;
+  --off:     #f7f8fc;
+  --border:  #e4e8f0;
+  --border2: #cdd3e0;
+  --text:    #0f1422;
+  --muted:   #7a839a;
+  --light:   #adb5c8;
+  --red:     #e8192c;
+  --green:   #00c97d;
+  --amber:   #f59e0b;
+  --blue:    #1a56ff;
+  --font:    'Space Grotesk', sans-serif;
+  --mono:    'Space Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--white); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 220px; flex-shrink: 0; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; padding: 28px 0;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  background: var(--white); z-index: 100;
+}
+.sidebar-logo { padding: 0 22px 28px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.logo-mark { width: 36px; height: 36px; background: var(--text); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+.logo-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.logo-sub  { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+
+.sb-sec { padding: 0 22px 6px; font-size: 9.5px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--light); margin-bottom: 4px; }
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px 9px 22px; font-size: 13px; color: var(--muted);
+  cursor: pointer; transition: all 0.15s;
+  border-left: 2px solid transparent; margin: 1px 0;
+}
+.sb-item:hover { color: var(--text); background: var(--off); }
+.sb-item.active { color: var(--text); font-weight: 600; border-left-color: var(--text); background: var(--off); }
+.sb-item .si { font-size: 14px; width: 18px; text-align: center; }
+
+.sb-bottom { margin-top: auto; padding: 16px 22px; border-top: 1px solid var(--border); }
+.model-status { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: blink 2s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* Main */
+.main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; }
+
+/* Topbar */
+.topbar {
+  height: 56px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; background: var(--white);
+  position: sticky; top: 0; z-index: 50;
+}
+.breadcrumb { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.breadcrumb span { color: var(--text); font-weight: 500; }
+.breadcrumb .sep { color: var(--light); }
+.badges { display: flex; align-items: center; gap: 8px; }
+.badge {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted);
+}
+.badge-g { color: var(--green); border-color: rgba(0,201,125,0.3); background: rgba(0,201,125,0.06); }
+.badge-b { color: var(--blue);  border-color: rgba(26,86,255,0.3);  background: rgba(26,86,255,0.06); }
+
+/* Content */
+.content { flex:1; padding: 32px; }
+.content-wrap { display: flex; gap: 24px; }
+.content-main { flex:1; min-width:0; }
+.info-sidebar { width: 240px; flex-shrink: 0; }
+
+/* ECG Header */
+.ecg-header {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px 28px; margin-bottom: 24px; overflow: hidden;
+}
+.ecg-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+.ecg-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+.ecg-sub   { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.ecg-line-wrap { position: relative; height: 56px; overflow: hidden; }
+.ecg-svg { width: 200%; height: 100%; animation: scroll-ecg 3s linear infinite; }
+@keyframes scroll-ecg { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* Steps */
+.step-nav { display: flex; align-items: center; gap: 0; margin-bottom: 28px; }
+.step-node { display: flex; align-items: center; gap: 10px; }
+.step-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--muted); font-family: var(--mono);
+  transition: all 0.3s; flex-shrink: 0; background: var(--white);
+}
+.step-circle.active { border-color: var(--text); color: var(--white); background: var(--text); }
+.step-circle.done   { border-color: var(--green); color: var(--white); background: var(--green); }
+.step-txt { font-size: 12px; font-weight: 500; color: var(--muted); }
+.step-txt.active { color: var(--text); font-weight: 600; }
+.step-line { flex:1; height:1px; background:var(--border); margin:0 14px; min-width:30px; transition:background 0.3s; }
+.step-line.done { background: var(--green); }
+
+/* Panels */
+.panel { display: none; animation: fadein 0.25s ease; }
+.panel.active { display: block; }
+@keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+.p-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; margin-bottom: 4px; }
+.p-sub   { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.col2 { grid-column: 1/-1; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+.field input, .field select {
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; color: var(--text); font-family: var(--font); font-size: 13px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+}
+.field input:focus, .field select:focus { border-color: var(--text); box-shadow: 0 0 0 3px rgba(15,20,34,0.08); }
+.field input::placeholder { color: var(--light); }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a839a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+}
+
+/* Section label */
+.sec-lbl {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--light); display: flex; align-items: center; gap: 10px; margin: 22px 0 14px;
+}
+.sec-lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* Upload */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; align-items: stretch; }
+.upload-grid > div { display: flex; flex-direction: column; }
+.uz {
+  border: 1.5px dashed var(--border2); border-radius: 10px; padding: 24px 16px;
+  text-align: center; cursor: pointer; position: relative;
+  transition: all 0.2s; background: var(--white);
+  min-height: 188px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+.uz:hover { border-color: var(--text); background: var(--off); }
+.uz.done  { border-style: solid; border-color: var(--green); background: rgba(0,201,125,0.03); }
+.uz input { position: absolute; inset:0; opacity:0; cursor:pointer; }
+.uz-icon  { font-size: 22px; margin-bottom: 8px; }
+.uz-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.uz-sub   { font-size: 11px; color: var(--muted); margin-bottom: 8px; min-height: 34px; line-height: 1.45; display: flex; align-items: center; justify-content: center; }
+.uz-badge { display: inline-block; font-size: 9.5px; font-family: var(--mono); border: 1px solid var(--border); border-radius: 3px; padding: 2px 8px; color: var(--muted); }
+.uz-ok    { display: none; align-items: center; justify-content: center; gap: 5px; font-size: 11px; color: var(--green); font-weight: 600; margin-top: 6px; }
+.uz.done .uz-ok { display: flex; }
+
+.fi-card { display: none; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-top: 10px; }
+.fi-card.show { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
+.fi-thumb { width: 48px; height: 48px; background: var(--off); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid var(--border); }
+.fi-name  { font-weight: 600; color: var(--text); font-size: 12px; }
+.fi-meta  { color: var(--muted); margin-top: 2px; font-family: var(--mono); font-size: 10px; }
+
+/* Nav */
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
+.btn { padding: 10px 22px; border-radius: 7px; border: 1px solid transparent; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-dark  { background: var(--text); color: var(--white); }
+.btn-dark:hover { background: #2a3050; }
+.btn-ghost { background: var(--white); color: var(--muted); border-color: var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+.btn-red   { background: var(--red); color: var(--white); }
+.btn-red:hover { background: #c8001d; }
+
+/* Info sidebar */
+.info-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.ic-title  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; }
+.perf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.perf-box  { border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; text-align: center; }
+.pb-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; }
+.pb-val { font-size: 20px; font-weight: 700; color: var(--text); margin-top: 2px; }
+.pb-sub { font-size: 9px; color: var(--light); }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.info-row:last-child { border-bottom: none; }
+.ir-lbl { color: var(--muted); }
+.ir-val { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text); }
+.ir-g { color: var(--green); }
+
+/* Processing */
+#processing { display: none; flex-direction: column; align-items: center; padding: 48px 0; }
+#processing.show { display: flex; }
+.monitor-wrap { width: 320px; height: 90px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #f0fdf8; margin-bottom: 28px; position: relative; }
+.monitor-lbl  { position: absolute; top: 8px; left: 12px; font-size: 9px; font-family: var(--mono); font-weight: 700; color: var(--green); letter-spacing: 1px; }
+.monitor-svg  { width: 200%; height: 100%; animation: scroll-ecg 2s linear infinite; }
+.proc-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.proc-sub   { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+.proc-steps { width: 320px; }
+.proc-step  { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--muted); transition: color 0.3s; }
+.proc-step:last-child { border-bottom: none; }
+.proc-step.run  { color: var(--text); font-weight: 600; }
+.proc-step.done { color: var(--green); }
+.ps-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: background 0.3s; }
+.proc-step.run  .ps-dot { background: var(--text); animation: blink 0.8s ease infinite; }
+.proc-step.done .ps-dot { background: var(--green); animation: none; }
+.ps-model { margin-left: auto; font-size: 10px; font-family: var(--mono); color: var(--light); }
+
+/* Results */
+#results { display: none; }
+#results.show { display: block; }
+.res-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.res-title { font-size: 16px; font-weight: 700; }
+.res-id { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+.status-banner { border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; border: 1px solid; }
+.sb-icon   { font-size: 20px; }
+.sb-status { font-size: 14px; font-weight: 700; }
+.sb-msg    { font-size: 12px; margin-top: 2px; opacity: 0.8; }
+.sum-row   { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+.sum-card  { border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.sc-icon  { font-size: 18px; margin-bottom: 6px; }
+.sc-lbl   { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.sc-val   { font-size: 17px; font-weight: 700; }
+.sc-sub   { font-size: 11px; margin-top: 4px; }
+.prob-rows { margin-top: 10px; }
+.prob-row  { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+.pr-name   { width: 88px; text-transform: uppercase; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.pr-track  { flex:1; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+.pr-fill   { height: 100%; border-radius: 2px; background: var(--text); transition: width 1s ease; }
+.pr-pct    { width: 44px; text-align:right; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+.dl-bar    { border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
+.dl-title  { font-size: 14px; font-weight: 600; }
+.dl-sub    { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.btn-dl    { display: flex; align-items: center; gap: 8px; background: var(--text); color: var(--white); padding: 10px 20px; border-radius: 7px; font-family: var(--font); font-size: 13px; font-weight: 600; text-decoration: none; transition: background 0.2s; border: none; cursor: pointer; }
+.btn-dl:hover { background: #2a3050; }
+.btn-new   { margin-top: 12px; background: none; border: none; font-family: var(--font); font-size: 12px; color: var(--muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.btn-new:hover { color: var(--text); }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">⚕</div>
+      <div class="logo-name">ClinAI</div>
+      <div class="logo-sub">AI Diagnostic System</div>
+    </div>
+
+    <div class="sb-sec" style="padding:0 22px 6px">WORKSPACE</div>
+    <div class="sb-item active"><span class="si">⊕</span> New Analysis</div>
+    <div class="sb-item"><span class="si">□</span> History</div>
+    <div class="sb-item"><span class="si">≋</span> Statistics</div>
+
+    <div class="sb-sec" style="padding:18px 22px 6px">MODELS</div>
+    <div class="sb-item"><span class="si">◎</span> VGG16 Detect</div>
+    <div class="sb-item"><span class="si">◎</span> U-Net Segment</div>
+    <div class="sb-item"><span class="si">◎</span> CNN+LSTM ECG</div>
+    <div class="sb-item"><span class="si">◎</span> Risk Predictors</div>
+
+    <div class="sb-sec" style="padding:18px 22px 6px">INFO</div>
+    <div class="sb-item"><span class="si">ⓘ</span> About</div>
+
+    <div class="sb-bottom">
+      <div class="model-status"><div class="dot-live"></div>Model active · CPU</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        ClinAI <span class="sep">/</span> <span id="bc">New Analysis</span>
+      </div>
+      <div class="badges">
+        <div class="badge badge-g">● F1: 99.46%</div>
+        <div class="badge badge-b">● AUC: 99.99%</div>
+        <div class="badge">VGG16 · CNN+LSTM · U-Net</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ECG animated header -->
+      <div class="ecg-header" id="hdr">
+        <div class="ecg-top">
+          <div>
+            <div class="ecg-title">Comprehensive Clinical Analysis</div>
+            <div class="ecg-sub">Brain MRI · ECG Signal · Cardiovascular Risk · Downloadable PDF Report</div>
+          </div>
+          <div class="badge" style="color:var(--red);border-color:rgba(232,25,44,0.3);background:rgba(232,25,44,0.06);font-size:10px;padding:5px 12px">● FOR RESEARCH USE ONLY</div>
+        </div>
+        <div class="ecg-line-wrap">
+          <svg class="ecg-svg" viewBox="0 0 1200 56" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <polyline fill="none" stroke="#e8192c" stroke-width="1.5" stroke-linejoin="round"
+              points="0,35 30,35 40,35 47,13 52,52 57,8 63,48 70,35
+                      100,35 110,35 117,13 122,52 127,8 133,48 140,35
+                      170,35 180,35 187,13 192,52 197,8 203,48 210,35
+                      240,35 250,35 257,13 262,52 267,8 273,48 280,35
+                      310,35 320,35 327,13 332,52 337,8 343,48 350,35
+                      380,35 390,35 397,13 402,52 407,8 413,48 420,35
+                      450,35 460,35 467,13 472,52 477,8 483,48 490,35
+                      520,35 530,35 537,13 542,52 547,8 553,48 560,35
+                      590,35 600,35 607,13 612,52 617,8 623,48 630,35
+                      660,35 670,35 677,13 682,52 687,8 693,48 700,35
+                      730,35 740,35 747,13 752,52 757,8 763,48 770,35
+                      800,35 810,35 817,13 822,52 827,8 833,48 840,35
+                      870,35 880,35 887,13 892,52 897,8 903,48 910,35
+                      940,35 950,35 957,13 962,52 967,8 973,48 980,35
+                      1010,35 1020,35 1027,13 1032,52 1037,8 1043,48 1050,35
+                      1080,35 1090,35 1097,13 1102,52 1107,8 1113,48 1120,35
+                      1150,35 1160,35 1167,13 1172,52 1177,8 1183,48 1200,35"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="content-wrap">
+        <div class="content-main">
+
+          <!-- Step nav -->
+          <div class="step-nav" id="snav">
+            <div class="step-node"><div class="step-circle active" id="sc1">1</div><div class="step-txt active" id="st1">Patient Info</div></div>
+            <div class="step-line" id="sl1"></div>
+            <div class="step-node"><div class="step-circle" id="sc2">2</div><div class="step-txt" id="st2">Scans & Signals</div></div>
+            <div class="step-line" id="sl2"></div>
+            <div class="step-node"><div class="step-circle" id="sc3">3</div><div class="step-txt" id="st3">Clinical Data</div></div>
+            <div class="step-line" id="sl3"></div>
+            <div class="step-node"><div class="step-circle" id="sc4">4</div><div class="step-txt" id="st4">Review</div></div>
+          </div>
+
+          <!-- Panel 1 -->
+          <div class="panel active" id="panel-1">
+            <div class="p-title">Patient Information</div>
+            <div class="p-sub">Basic demographic and identification details</div>
+            <div class="form-grid">
+              <div class="field col2"><label>Full Name</label><input type="text" id="f_name" placeholder="e.g. Muhammed Panchla"/></div>
+              <div class="field"><label>Age</label><input type="number" id="f_age" min="1" max="120" placeholder="e.g. 45"/></div>
+              <div class="field"><label>Gender</label>
+                <select id="f_gender"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option></select>
+              </div>
+            </div>
+            <div class="nav-row"><div></div><button class="btn btn-dark" onclick="go(2)">Continue →</button></div>
+          </div>
+
+          <!-- Panel 2 -->
+          <div class="panel" id="panel-2">
+            <div class="p-title">Medical Scans & Signals</div>
+            <div class="p-sub">Upload imaging files and ECG signal</div>
+
+            <div class="sec-lbl">Brain MRI Scans</div>
+            <div class="upload-grid">
+              <div>
+                <label class="uz" id="uz-det" for="fi-det">
+                  <input type="file" id="fi-det" accept=".jpg,.jpeg,.png,.tif" onchange="onFile(this,'uz-det','fn-det','fic-det','fin-det','fim-det')"/>
+                  <div class="uz-icon">🔍</div>
+                  <div class="uz-title">Detection Scan</div>
+                  <div class="uz-sub">Tumor classification · BraTS format<br>Glioma · Meningioma · Pituitary</div>
+                  <div class="uz-badge">JPG · PNG · TIF</div>
+                  <div class="uz-ok">✓ <span id="fn-det">uploaded</span></div>
+                </label>
+                <div class="fi-card" id="fic-det">
+                  <div class="fi-thumb">🧠</div>
+                  <div><div class="fi-name" id="fin-det"></div><div class="fi-meta" id="fim-det"></div></div>
+                </div>
+              </div>
+              <div>
+                <label class="uz" id="uz-seg" for="fi-seg">
+                  <input type="file" id="fi-seg" accept=".tif,.tiff,.png" onchange="onFile(this,'uz-seg','fn-seg','fic-seg','fin-seg','fim-seg')"/>
+                  <div class="uz-icon">🗺️</div>
+                  <div class="uz-title">Segmentation Scan <span style="color:var(--light);font-size:11px;font-weight:400">(optional)</span></div>
+                  <div class="uz-sub">Tumor region mapping · LGG format<br>Pixel-level segmentation</div>
+                  <div class="uz-badge">TIF · TIFF · PNG</div>
+                  <div class="uz-ok">✓ <span id="fn-seg">uploaded</span></div>
+                </label>
+                <div class="fi-card" id="fic-seg">
+                  <div class="fi-thumb">🗺️</div>
+                  <div><div class="fi-name" id="fin-seg"></div><div class="fi-meta" id="fim-seg"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-lbl">ECG Signal</div>
+            <label class="uz" id="uz-ecg" for="fi-ecg" style="margin-bottom:6px">
+              <input type="file" id="fi-ecg" accept=".csv" onchange="onFile(this,'uz-ecg','fn-ecg','fic-ecg','fin-ecg','fim-ecg')"/>
+              <div class="uz-icon">📈</div>
+              <div class="uz-title">ECG Signal CSV</div>
+              <div class="uz-sub">188 rows × 1 column · PTB Diagnostic format · 187 signal values + label</div>
+              <div class="uz-badge">CSV only</div>
+              <div class="uz-ok">✓ <span id="fn-ecg">uploaded</span></div>
+            </label>
+            <div class="fi-card" id="fic-ecg">
+              <div class="fi-thumb">📊</div>
+              <div><div class="fi-name" id="fin-ecg"></div><div class="fi-meta" id="fim-ecg"></div></div>
+            </div>
+
+            <div class="nav-row">
+              <button class="btn btn-ghost" onclick="go(1)">← Back</button>
+              <button class="btn btn-dark" onclick="go(3)">Continue →</button>
+            </div>
+          </div>
+
+          <!-- Panel 3 -->
+          <div class="panel" id="panel-3">
+            <div class="p-title">Clinical Parameters</div>
+            <div class="p-sub">Required for heart disease and stroke risk prediction</div>
+
+            <div class="sec-lbl">Cardiac Parameters</div>
+            <div class="form-grid">
+              <div class="field"><label>Resting BP (mmHg)</label><input type="number" id="f_bp" placeholder="e.g. 130"/></div>
+              <div class="field"><label>Cholesterol (mg/dL)</label><input type="number" id="f_chol" placeholder="e.g. 220"/></div>
+              <div class="field"><label>Max Heart Rate (bpm)</label><input type="number" id="f_maxhr" placeholder="e.g. 150"/></div>
+              <div class="field"><label>Fasting Blood Sugar &gt;120</label>
+                <select id="f_fbs"><option value="0">No (≤120 mg/dL)</option><option value="1">Yes (&gt;120 mg/dL)</option></select>
+              </div>
+              <div class="field"><label>ST Depression (Oldpeak)</label><input type="number" id="f_oldpeak" step="0.1" placeholder="e.g. 1.5"/></div>
+              <div class="field"><label>Exercise-Induced Angina</label>
+                <select id="f_angina"><option value="0">No</option><option value="1">Yes</option></select>
+              </div>
+              <div class="field"><label>Chest Pain Type</label>
+                <select id="f_cpt">
+                  <option value="ATA">ATA — Atypical Angina</option>
+                  <option value="NAP">NAP — Non-Anginal Pain</option>
+                  <option value="TA">TA — Typical Angina</option>
+                  <option value="ASY">ASY — Asymptomatic</option>
+                </select>
+              </div>
+              <div class="field"><label>Resting ECG</label>
+                <select id="f_recg">
+                  <option value="Normal">Normal</option>
+                  <option value="ST">ST — ST-T Wave Abnormality</option>
+                  <option value="LVH">LVH — Left Ventricular Hypertrophy</option>
+                </select>
+              </div>
+              <div class="field"><label>ST Slope</label>
+                <select id="f_slope"><option value="Up">Up</option><option value="Flat">Flat</option><option value="Down">Down</option></select>
+              </div>
+            </div>
+
+            <div class="sec-lbl">Metabolic & Lifestyle</div>
+            <div class="form-grid">
+              <div class="field"><label>BMI</label><input type="number" id="f_bmi" step="0.1" placeholder="e.g. 27.5"/></div>
+              <div class="field"><label>Avg. Glucose (mg/dL)</label><input type="number" id="f_glucose" step="0.1" placeholder="e.g. 105.0"/></div>
+              <div class="field"><label>Hypertension</label><select id="f_htn"><option value="0">No</option><option value="1">Yes</option></select></div>
+              <div class="field"><label>Prior Heart Disease</label><select id="f_hd"><option value="0">No</option><option value="1">Yes</option></select></div>
+              <div class="field"><label>Ever Married</label><select id="f_married"><option value="1">Yes</option><option value="0">No</option></select></div>
+              <div class="field"><label>Residence</label><select id="f_urban"><option value="1">Urban</option><option value="0">Rural</option></select></div>
+              <div class="field"><label>Work Type</label>
+                <select id="f_work">
+                  <option value="Private">Private</option>
+                  <option value="Self-employed">Self-employed</option>
+                  <option value="Govt_job">Government Job</option>
+                  <option value="children">Children</option>
+                  <option value="Never_worked">Never Worked</option>
+                </select>
+              </div>
+              <div class="field"><label>Smoking Status</label>
+                <select id="f_smoke">
+                  <option value="never smoked">Never Smoked</option>
+                  <option value="formerly smoked">Formerly Smoked</option>
+                  <option value="smokes">Currently Smokes</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="nav-row">
+              <button class="btn btn-ghost" onclick="go(2)">← Back</button>
+              <button class="btn btn-dark" onclick="go(4)">Review →</button>
+            </div>
+          </div>
+
+          <!-- Panel 4 -->
+          <div class="panel" id="panel-4">
+            <div class="p-title">Review & Generate</div>
+            <div class="p-sub">Confirm inputs before running the diagnostic pipeline</div>
+            <div id="rev-tbl"></div>
+            <div class="nav-row">
+              <button class="btn btn-ghost" onclick="go(3)">← Back</button>
+              <button class="btn btn-red" onclick="submit()">⚕ Generate Diagnostic Report</button>
+            </div>
+          </div>
+
+          <!-- Processing -->
+          <div id="processing">
+            <div class="monitor-wrap">
+              <div class="monitor-lbl">ECG · LIVE ANALYSIS</div>
+              <svg class="monitor-svg" viewBox="0 0 1200 90" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <polyline fill="none" stroke="#00c97d" stroke-width="2" stroke-linejoin="round"
+                  points="0,55 30,55 40,55 47,22 52,75 57,10 63,68 70,55
+                          100,55 110,55 117,22 122,75 127,10 133,68 140,55
+                          170,55 180,55 187,22 192,75 197,10 203,68 210,55
+                          240,55 250,55 257,22 262,75 267,10 273,68 280,55
+                          310,55 320,55 327,22 332,75 337,10 343,68 350,55
+                          380,55 390,55 397,22 402,75 407,10 413,68 420,55
+                          450,55 460,55 467,22 472,75 477,10 483,68 490,55
+                          520,55 530,55 537,22 542,75 547,10 553,68 560,55
+                          590,55 600,55 607,22 612,75 617,10 623,68 630,55
+                          660,55 670,55 677,22 682,75 687,10 693,68 700,55
+                          730,55 740,55 747,22 752,75 757,10 763,68 770,55
+                          800,55 810,55 817,22 822,75 827,10 833,68 840,55
+                          870,55 880,55 887,22 892,75 897,10 903,68 910,55
+                          940,55 950,55 957,22 962,75 967,10 973,68 980,55
+                          1010,55 1020,55 1027,22 1032,75 1037,10 1043,68 1050,55
+                          1080,55 1090,55 1097,22 1102,75 1107,10 1113,68 1120,55
+                          1150,55 1160,55 1167,22 1172,75 1177,10 1183,68 1200,55"/>
+              </svg>
+            </div>
+            <div class="proc-title">Running Diagnostic Pipeline</div>
+            <div class="proc-sub">Analysing all uploaded data through 5 AI models</div>
+            <div class="proc-steps">
+              <div class="proc-step" id="ps0"><div class="ps-dot"></div> Preprocessing inputs <span class="ps-model">—</span></div>
+              <div class="proc-step" id="ps1"><div class="ps-dot"></div> Brain tumor detection <span class="ps-model">VGG16</span></div>
+              <div class="proc-step" id="ps2"><div class="ps-dot"></div> Tumor segmentation <span class="ps-model">U-Net + VGG16</span></div>
+              <div class="proc-step" id="ps3"><div class="ps-dot"></div> ECG classification <span class="ps-model">CNN + LSTM</span></div>
+              <div class="proc-step" id="ps4"><div class="ps-dot"></div> Cardiovascular risk <span class="ps-model">Logistic Regression</span></div>
+              <div class="proc-step" id="ps5"><div class="ps-dot"></div> Generating PDF report <span class="ps-model">WeasyPrint</span></div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div id="results">
+            <div class="res-top">
+              <div><div class="res-title">Analysis Complete</div><div class="res-id" id="r-id"></div></div>
+              <button class="btn btn-ghost" onclick="location.reload()" style="font-size:12px">New Analysis</button>
+            </div>
+            <div class="status-banner" id="r-banner">
+              <div class="sb-icon" id="r-icon"></div>
+              <div><div class="sb-status" id="r-status"></div><div class="sb-msg" id="r-msg"></div></div>
+            </div>
+            <div class="sum-row">
+              <div class="sum-card" id="r-bc">
+                <div class="sc-icon">🧠</div>
+                <div class="sc-lbl">Brain Tumor Detection</div>
+                <div class="sc-val" id="r-bv">—</div>
+                <div class="sc-sub" id="r-bs">—</div>
+                <div class="prob-rows" id="r-bp"></div>
+              </div>
+              <div class="sum-card" id="r-ec">
+                <div class="sc-icon">❤️</div>
+                <div class="sc-lbl">Cardiac ECG</div>
+                <div class="sc-val" id="r-ev">—</div>
+                <div class="sc-sub" id="r-es">—</div>
+              </div>
+              <div class="sum-card" id="r-rc">
+                <div class="sc-icon">💊</div>
+                <div class="sc-lbl">Cardiovascular Risk</div>
+                <div class="sc-val" id="r-rv">—</div>
+                <div class="sc-sub" id="r-rs">—</div>
+              </div>
+            </div>
+            <div class="dl-bar">
+              <div><div class="dl-title">Full Diagnostic Report Ready</div><div class="dl-sub">6-page professional PDF · Brain · ECG · Risk · Summary</div></div>
+              <a class="btn-dl" id="r-pdf" href="#" download>↓ Download PDF Report</a>
+            </div>
+            <div style="text-align:center"><button class="btn-new" onclick="location.reload()">← Start new analysis</button></div>
+          </div>
+
+        </div><!-- /content-main -->
+
+        <!-- Info sidebar -->
+        <div class="info-sidebar">
+          <div class="info-card">
+            <div class="ic-title">Model Performance</div>
+            <div class="perf-grid">
+              <div class="perf-box"><div class="pb-lbl">Val IOU</div><div class="pb-val">71.1<span style="font-size:13px">%</span></div><div class="pb-sub">Segmentation</div></div>
+              <div class="perf-box"><div class="pb-lbl">Val Dice</div><div class="pb-val">78.2<span style="font-size:13px">%</span></div><div class="pb-sub">Segmentation</div></div>
+              <div class="perf-box"><div class="pb-lbl">Test Acc</div><div class="pb-val">93.2<span style="font-size:13px">%</span></div><div class="pb-sub">Detection</div></div>
+              <div class="perf-box"><div class="pb-lbl">ECG F1</div><div class="pb-val">99.4<span style="font-size:13px">%</span></div><div class="pb-sub">CNN+LSTM</div></div>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="ic-title">System Information</div>
+            <div class="info-row"><span class="ir-lbl">Detection</span><span class="ir-val">VGG16</span></div>
+            <div class="info-row"><span class="ir-lbl">Segmentation</span><span class="ir-val">U-Net</span></div>
+            <div class="info-row"><span class="ir-lbl">ECG Model</span><span class="ir-val">CNN+LSTM</span></div>
+            <div class="info-row"><span class="ir-lbl">Risk Models</span><span class="ir-val">LogReg ×2</span></div>
+            <div class="info-row"><span class="ir-lbl">Tumor Classes</span><span class="ir-val">4</span></div>
+            <div class="info-row"><span class="ir-lbl">ECG Classes</span><span class="ir-val ir-g">Normal / Abnormal</span></div>
+          </div>
+
+          <div class="info-card" style="background:rgba(232,25,44,0.03);border-color:rgba(232,25,44,0.15)">
+            <div class="ic-title" style="color:var(--red)">Research Use Only</div>
+            <p style="font-size:11px;color:var(--muted);line-height:1.65">This tool is not a certified medical device. Do not use for clinical diagnosis. Always consult a qualified physician for medical evaluation.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let step = 1;
+const v = id => document.getElementById(id).value.trim();
+const $ = id => document.getElementById(id);
+
+function go(n) {
+  if (n > step && !validate(step)) return;
+  $(`panel-${step}`).classList.remove('active');
+  step = n;
+  $(`panel-${step}`).classList.add('active');
+  if (n === 4) buildReview();
+  syncSteps();
+}
+
+function syncSteps() {
+  for (let i = 1; i <= 4; i++) {
+    const c = $(`sc${i}`), t = $(`st${i}`);
+    c.classList.remove('active','done'); t.classList.remove('active');
+    if (i < step)      { c.classList.add('done');   c.textContent = '✓'; }
+    else if (i === step){ c.classList.add('active'); c.textContent = i; t.classList.add('active'); }
+    else { c.textContent = i; }
+  }
+  for (let i = 1; i <= 3; i++) $(`sl${i}`).classList.toggle('done', i < step);
+  $('bc').textContent = ['Patient Info','Scans & Signals','Clinical Data','Review & Generate'][step-1];
+}
+
+function validate(n) {
+  if (n===1) {
+    if (!v('f_name'))   { alert('Please enter patient name.');  return false; }
+    if (!v('f_age'))    { alert('Please enter patient age.');   return false; }
+    if (!v('f_gender')) { alert('Please select gender.');       return false; }
+  }
+  if (n===2) {
+    if (!$('fi-det').files[0]) { alert('Please upload a Detection MRI scan.'); return false; }
+    if (!$('fi-ecg').files[0]) { alert('Please upload an ECG CSV file.');      return false; }
+  }
+  return true;
+}
+
+function onFile(input, zoneId, nameId, cardId, nameEl, metaEl) {
+  const f = input.files[0]; if (!f) return;
+  $(zoneId).classList.add('done');
+  $(nameId).textContent = f.name;
+  $(nameEl).textContent = f.name;
+  $(metaEl).textContent = (f.size/1024).toFixed(1) + ' KB · ' + f.name.split('.').pop().toUpperCase();
+  $(cardId).classList.add('show');
+}
+
+function buildReview() {
+  const det = $('fi-det').files[0], seg = $('fi-seg').files[0], ecg = $('fi-ecg').files[0];
+  $('rev-tbl').innerHTML = `<table style="width:100%;border-collapse:collapse">${[
+    ['Patient', v('f_name') + ', ' + v('f_age') + ' yrs · ' + v('f_gender')],
+    ['Detection Scan', det ? '✓ ' + det.name : '—', det ? 'var(--green)':''],
+    ['Segmentation Scan', seg ? '✓ ' + seg.name : 'Not provided (optional)', seg ? 'var(--green)':'var(--light)'],
+    ['ECG Signal', ecg ? '✓ ' + ecg.name : '—', ecg ? 'var(--green)':''],
+    ['Blood Pressure', v('f_bp') + ' mmHg'],
+    ['BMI / Glucose', v('f_bmi') + ' / ' + v('f_glucose') + ' mg/dL'],
+    ['Smoking', $('f_smoke').value],
+  ].map(([l,val,c])=>`<tr>
+    <td style="padding:9px 0;color:var(--muted);font-size:12px;width:180px;border-bottom:1px solid var(--border)">${l}</td>
+    <td style="padding:9px 0;font-size:13px;font-weight:500;border-bottom:1px solid var(--border);color:${c||'var(--text)'}">${val}</td>
+  </tr>`).join('')}</table>`;
+}
+
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const cap   = s  => s.charAt(0).toUpperCase() + s.slice(1);
+const pct   = n  => (n*100).toFixed(1) + '%';
+
+async function submit() {
+  $('snav').style.display = 'none';
+  $('panel-4').classList.remove('active');
+  $('hdr').style.display = 'none';
+  $('processing').classList.add('show');
+
+  const ids = ['ps0','ps1','ps2','ps3','ps4','ps5'];
+  for (let i = 0; i < ids.length; i++) {
+    if (i > 0) { $(ids[i-1]).classList.remove('run'); $(ids[i-1]).classList.add('done'); }
+    $(ids[i]).classList.add('run');
+    await sleep(900);
+  }
+
+  const fd = new FormData();
+  fd.append('patient_name',          v('f_name'));
+  fd.append('patient_age',           v('f_age'));
+  fd.append('patient_gender',        v('f_gender'));
+  fd.append('detection_image',       $('fi-det').files[0]);
+  fd.append('ecg_csv',               $('fi-ecg').files[0]);
+  const seg = $('fi-seg').files[0];
+  if (seg) fd.append('segmentation_image', seg);
+  fd.append('resting_bp',            v('f_bp'));
+  fd.append('cholesterol',           v('f_chol'));
+  fd.append('max_hr',                v('f_maxhr'));
+  fd.append('fasting_bs',            $('f_fbs').value);
+  fd.append('oldpeak',               v('f_oldpeak'));
+  fd.append('chest_pain_type',       $('f_cpt').value);
+  fd.append('resting_ecg',           $('f_recg').value);
+  fd.append('exercise_angina',       $('f_angina').value);
+  fd.append('st_slope',              $('f_slope').value);
+  fd.append('bmi',                   v('f_bmi'));
+  fd.append('avg_glucose_level',     v('f_glucose'));
+  fd.append('hypertension',          $('f_htn').value);
+  fd.append('heart_disease_history', $('f_hd').value);
+  fd.append('ever_married',          $('f_married').value);
+  fd.append('is_urban',              $('f_urban').value);
+  fd.append('work_type',             $('f_work').value);
+  fd.append('smoking_status',        $('f_smoke').value);
+
+  try {
+    const res  = await fetch('/api/analyze', { method:'POST', body:fd });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.detail || 'Analysis failed');
+    $('processing').classList.remove('show');
+    showResults(data);
+  } catch(e) {
+    $('processing').classList.remove('show');
+    alert('Error: ' + e.message);
+    location.reload();
+  }
+}
+
+function showResults(data) {
+  const r = data.result;
+  $('results').classList.add('show');
+  $('r-id').textContent = 'Report #' + data.report_id + ' · ' + r.timestamp;
+
+  const b = $('r-banner');
+  b.style.background  = r.overall.color + '12';
+  b.style.borderColor = r.overall.color + '40';
+  $('r-icon').textContent   = r.overall.status==='CRITICAL'?'🔴':r.overall.status==='WARNING'?'🟠':'🟢';
+  $('r-status').textContent = r.overall.status;
+  $('r-status').style.color = r.overall.color;
+  $('r-msg').textContent    = r.overall.message;
+
+  // Brain
+  $('r-bc').style.borderColor = r.tumor.severity_color + '60';
+  $('r-bv').textContent = cap(r.tumor.tumor_class);
+  $('r-bv').style.color = r.tumor.severity_color;
+  $('r-bs').textContent = r.tumor.severity + ' · ' + pct(r.tumor.confidence);
+  $('r-bs').style.color = r.tumor.severity_color;
+  $('r-bp').innerHTML   = Object.entries(r.tumor.all_probs).map(([cls,p])=>`
+    <div class="prob-row">
+      <div class="pr-name">${cls.toUpperCase()}</div>
+      <div class="pr-track"><div class="pr-fill" style="width:${(p*100).toFixed(1)}%;background:${cls===r.tumor.tumor_class?r.tumor.severity_color:'#e4e8f0'}"></div></div>
+      <div class="pr-pct" style="color:${cls===r.tumor.tumor_class?r.tumor.severity_color:'var(--muted)'}">${(p*100).toFixed(1)}%</div>
+    </div>`).join('');
+
+  // ECG
+  $('r-ec').style.borderColor = r.ecg.status_color + '60';
+  $('r-ev').textContent = r.ecg.label;
+  $('r-ev').style.color = r.ecg.status_color;
+  $('r-es').textContent = pct(r.ecg.confidence) + ' confidence';
+  $('r-es').style.color = r.ecg.status_color;
+
+  // Risk
+  $('r-rc').style.borderColor = r.heart.color + '60';
+  $('r-rv').textContent = r.heart.risk_label;
+  $('r-rv').style.color = r.heart.color;
+  $('r-rs').textContent = 'Stroke: ' + r.stroke.risk_label;
+  $('r-rs').style.color = r.stroke.color;
+
+  $('r-pdf').href = data.pdf_url;
+}
+</script>
+</body>
+</html>

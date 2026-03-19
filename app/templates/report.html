@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('../static/fonts/SpaceGrotesk.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 300 700;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  src: url('../static/fonts/SpaceMono-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  src: url('../static/fonts/SpaceMono-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --white:  #ffffff;
+  --off:    #f7f8fc;
+  --border: #e4e8f0;
+  --bd2:    #cdd3e0;
+  --text:   #0f1422;
+  --muted:  #7a839a;
+  --light:  #adb5c8;
+  --red:    #e8192c;
+  --green:  #00c97d;
+  --amber:  #f59e0b;
+  --blue:   #1a56ff;
+  --purple: #7c3aed;
+  --font:   'Space Grotesk', Arial, Helvetica, sans-serif;
+  --mono:   'Space Mono', 'Courier New', Courier, monospace;
+}
+
+html, body {
+  font-family: var(--font);
+  background: var(--white);
+  color: var(--text);
+  font-size: 10pt;
+  line-height: 1.5;
+  width: 210mm;
+}
+
+@page { size: A4 portrait; margin: 0; }
+
+/* ── Page breaks ─────────────────────────────────────── */
+.cover,
+.page {
+  width: 178mm;
+  min-height: 271mm;
+  padding: 14mm 16mm 12mm;
+  background: var(--white);
+  overflow: visible;
+  page-break-after: always;
+  break-after: page;
+  page-break-inside: avoid;
+  break-inside: avoid-page;
+}
+.page { position: relative; }
+.cover:last-child, .page:last-child { page-break-after: auto; break-after: auto; }
+img { display: block; max-width: 100%; }
+
+@media print {
+  .cover, .page { page-break-after: always; break-after: page; }
+}
+
+/* ── Page header (all pages except cover) ─────────────── */
+.ph {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  padding-bottom: 9px; margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.ph-left  { display: flex; align-items: flex-start; gap: 8px; min-width: 0; flex: 1; }
+.ph-icon  {
+  width: 22px; height: 22px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  background: rgba(232,25,44,0.08);
+}
+.ph-icon img { width: 17px; height: 17px; object-fit: contain; }
+.ph-title { font-size: 14pt; font-weight: 700; letter-spacing: -0.3px; }
+.ph-sub   { font-size: 8pt; color: var(--muted); margin-top: 1px; overflow-wrap: anywhere; }
+.ph-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.ph-badge {
+  font-family: var(--mono); font-size: 7.5pt;
+  padding: 2px 7px; border-radius: 3px;
+  border: 1px solid var(--border); color: var(--muted);
+}
+.ph-badge-g { color: var(--green); border-color: rgba(0,201,125,0.35); }
+.ph-badge-b { color: var(--blue);  border-color: rgba(26,86,255,0.35); }
+.pg-num { font-family: var(--mono); font-size: 8pt; color: var(--light); margin-left: 8px; }
+
+/* ── Cards ───────────────────────────────────────────── */
+.card { border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; margin-bottom: 10px; }
+.ct {
+  font-size: 7.5pt; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--muted); margin-bottom: 11px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
+}
+.cbadge {
+  font-family: var(--mono); font-size: 7pt; padding: 2px 7px;
+  border-radius: 3px; border: 1px solid var(--border); color: var(--muted);
+}
+
+/* ── Utility ─────────────────────────────────────────── */
+.red    { color: var(--red); }
+.green  { color: var(--green); }
+.amber  { color: var(--amber); }
+.blue   { color: var(--blue); }
+.purple { color: var(--purple); }
+.muted  { color: var(--muted); }
+.mono   { font-family: var(--mono); }
+.divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+
+/* ══════════════════════════════════════════════════════
+   PAGE 1 — COVER
+══════════════════════════════════════════════════════ */
+.cover {
+  min-height: 269mm;
+  padding: 14mm 16mm 14mm;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.cover::after {
+  content: "";
+  position: absolute;
+  left: -16mm;
+  right: -16mm;
+  bottom: 0;
+  height: 3px;
+  background: var(--red);
+}
+.cover-top {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 10mm;
+  margin-bottom: 38px;
+}
+.c-logo { display: flex; align-items: center; gap: 0; }
+.c-logo-mark { display: none; }
+.c-logo-name { font-size: 18pt; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+.c-logo-sub  { font-size: 7.5pt; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+.c-date      { text-align: right; font-size: 9pt; color: var(--muted); max-width: 62mm; overflow-wrap: anywhere; }
+.c-date strong { display: block; color: var(--text); font-size: 11pt; margin-bottom: 3px; }
+
+.c-hero { flex: 1; }
+.c-tag {
+  display: inline-block; font-size: 7.5pt; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--red);
+  border: 1px solid rgba(232,25,44,0.3); border-radius: 20px;
+  padding: 3px 12px; margin-bottom: 16px;
+}
+.c-title {
+  font-size: 31pt; font-weight: 700; color: var(--text);
+  line-height: 1.12; letter-spacing: -1px; margin-bottom: 8px;
+}
+.c-title span { color: var(--red); }
+.c-subtitle { font-size: 10.5pt; color: var(--muted); margin-bottom: 30px; }
+
+.c-patient {
+  border: 1px solid var(--border); border-radius: 11px;
+  padding: 16px 18px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 20px;
+}
+.cp-field label { font-size: 7.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); display: block; margin-bottom: 3px; }
+.cp-field span  { font-size: 12pt; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+.cp-field .mono-val { font-family: var(--mono); font-size: 11pt; color: var(--blue); }
+.c-showcase {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #fcfdff 0%, #f8faff 100%);
+}
+.c-showcase-title {
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.c-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-items: stretch;
+}
+.c-showcase-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: var(--white);
+  min-height: 70px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.c-showcase-head { font-size: 8.5pt; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.1px; }
+.c-showcase-sub { font-size: 7.5pt; color: var(--muted); line-height: 1.38; }
+
+.c-footer {
+  margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.c-footer-meta { font-size: 8pt; color: var(--muted); font-family: var(--mono); overflow-wrap: anywhere; }
+.c-disclaimer {
+  background: rgba(232,25,44,0.06); border: 1px solid rgba(232,25,44,0.2);
+  border-radius: 7px; padding: 7px 12px;
+  font-size: 8pt; color: #b8001a; font-weight: 600; overflow-wrap: anywhere;
+}
+
+
+/* ══════════════════════════════════════════════════════
+   PAGE 2 — EXECUTIVE SUMMARY
+══════════════════════════════════════════════════════ */
+.overall-banner {
+  border-radius: 9px; padding: 13px 16px;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px; border: 1px solid;
+}
+.ob-dot    { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.ob-status { font-size: 12pt; font-weight: 700; }
+.ob-msg    { font-size: 9pt; margin-top: 2px; }
+
+.sum3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.s3 { border: 1px solid var(--border); border-radius: 9px; padding: 13px 14px; min-height: 96px; }
+.s3-icon {
+  width: 18px;
+  height: 18px;
+  margin-bottom: 9px;
+}
+.s3-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.s3-lbl  { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; margin-bottom: 5px; }
+.s3-val  { font-size: 13.5pt; font-weight: 700; line-height: 1.08; min-height: 30px; }
+.s3-sub  { font-size: 8.2pt; margin-top: 3px; line-height: 1.35; }
+
+.clin-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.clin-table th { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; padding: 7px 9px; text-align: left; border-bottom: 1px solid var(--border); }
+.clin-table td { padding: 8px 9px; font-size: 9.5pt; border-bottom: 1px solid var(--border); }
+.clin-table tr:last-child td { border-bottom: none; }
+.tv { font-family: var(--mono); font-size: 9pt; font-weight: 700; color: var(--blue); }
+
+
+/* ══════════════════════════════════════════════════════
+   PAGE 3 — DETECTION
+══════════════════════════════════════════════════════ */
+.diag-banner {
+  border-radius: 9px; padding: 14px 16px;
+  margin-bottom: 10px; border-left: 4px solid;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.db-label { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 5px; }
+.db-name  { font-size: 18pt; font-weight: 700; letter-spacing: -0.5px; }
+.db-desc  { font-size: 8.2pt; color: var(--muted); margin-top: 4px; max-width: 320px; line-height: 1.45; overflow-wrap: anywhere; }
+.db-pct   { font-size: 28pt; font-weight: 700; line-height: 1; text-align: right; }
+.db-conf  { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); text-align: right; margin-top: 3px; }
+
+/* Scan preview */
+.scan-grid {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-bottom: 12px;
+}
+.scan-meta-left {
+  width: 96px;
+  flex: 0 0 96px;
+  display: grid;
+  gap: 8px;
+}
+.scan-img {
+  width: 150px; flex: 0 0 150px; min-width: 150px; height: auto; min-height: 110px; background: #0a0f1e; border-radius: 7px;
+  overflow: hidden; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.scan-img img { width: 100%; height: 100%; object-fit: cover; }
+.scan-meta-right {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-content: flex-start;
+  min-width: 0;
+}
+.si-box {
+  border: 1px solid var(--border); border-radius: 7px; padding: 8px 11px; min-height: 46px;
+  display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+.si-lbl { font-size: 6.7pt; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); font-weight: 600; }
+.si-val { font-size: 10.2pt; line-height: 1.1; font-weight: 600; font-family: var(--mono); }
+.si-val-sm { font-size: 8.2pt; }
+
+/* Prob grid 2x2 */
+.prob-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.prob-item { border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; }
+.pi-name { font-family: var(--mono); font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: flex; justify-content: space-between; }
+.pi-track { height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; margin-bottom: 5px; }
+.pi-fill  { height: 100%; border-radius: 2px; }
+.pi-pct   { font-size: 16pt; font-weight: 700; }
+
+/* Tumor class legend */
+.tc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.tc-row  { display: flex; justify-content: space-between; align-items: center; padding: 6px 9px; border: 1px solid var(--border); border-radius: 5px; }
+.tc-left { display: flex; align-items: center; gap: 7px; font-size: 9.5pt; font-weight: 500; }
+.tc-dot  { width: 7px; height: 7px; border-radius: 50%; }
+.tc-badge{ font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 2px 7px; border-radius: 3px; }
+
+/* How it works */
+.hiw-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 9pt; }
+.hiw-row:last-child { border-bottom: none; }
+.hiw-step { color: var(--muted); font-size: 8pt; }
+.hiw-val  { font-family: var(--mono); font-size: 8pt; color: var(--text); font-weight: 700; }
+
+
+/* ══════════════════════════════════════════════════════
+   PAGE 4 — SEGMENTATION
+══════════════════════════════════════════════════════ */
+.seg-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.ss-box    { border: 1px solid var(--border); border-radius: 9px; padding: 11px; text-align: center; }
+.ss-lbl    { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; margin-bottom: 7px; }
+.ss-val    { font-size: 20pt; font-weight: 700; line-height: 1; }
+.ss-sub    { font-size: 8pt; color: var(--muted); margin-top: 4px; }
+
+.px-bar-label { display: flex; justify-content: space-between; font-size: 9pt; color: var(--muted); margin-bottom: 5px; }
+.px-bar-label strong { color: var(--text); }
+.px-bar-track { height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+.px-bar-fill  { height: 100%; border-radius: 4px; background: var(--red); }
+
+.seg-3img { display: flex; gap: 8px; margin-bottom: 8px; }
+.sim-box  { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; flex: 1 1 0; min-width: 0; }
+.sim-img  { height: 110px; background: #0a0a1a; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.sim-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sim-box.sim-mask .sim-img { background: #f8f0f0; }
+.sim-box.sim-mask .sim-img img { object-fit: contain; background: #f8f0f0; padding: 6px; }
+.sim-cap  { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); text-align: center; padding: 6px; border-top: 1px solid var(--border); font-weight: 600; }
+
+.heatmap-box { height: 200px; padding: 0; background: #0a0a1a; border-radius: 7px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 1px solid #1f2937; }
+.heatmap-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 7px; background: #0a0a1a; display: block; }
+.section-conclusion { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: #fafcff; margin-top: 10px; }
+.section-conclusion .sc-title { font-size: 7pt; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+.section-conclusion .sc-text { font-size: 8.5pt; color: var(--text); line-height: 1.55; }
+
+.iou-note { font-size: 7.7pt; color: var(--muted); border-left: 3px solid var(--bd2); padding-left: 9px; font-style: italic; line-height: 1.5; }
+.page-break { break-before: page; page-break-before: always; height: 0; margin: 0; }
+
+/* Perf grid 2x2 (like NeuroScan) */
+.perf-2x2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pbox     { border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; text-align: center; }
+.pb-lbl   { font-size: 7pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; }
+.pb-val   { font-size: 17pt; font-weight: 700; color: var(--text); margin-top: 2px; }
+.pb-sub   { font-size: 7.5pt; color: var(--light); }
+
+
+/* ══════════════════════════════════════════════════════
+   PAGE 5 — ECG
+══════════════════════════════════════════════════════ */
+.ecg-banner {
+  border-radius: 9px; padding: 14px 18px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  margin-bottom: 12px; border: 1px solid;
+}
+.ecg-bl-label { font-size: 16pt; font-weight: 700; }
+.ecg-bl-desc  { font-size: 8.5pt; margin-top: 3px; opacity: 0.85; }
+.ecg-bl-pct   { font-size: 28pt; font-weight: 700; text-align: right; line-height: 1; }
+.ecg-bl-conf  { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; text-align: right; margin-top: 3px; opacity: 0.7; }
+
+/* Dark waveform chart */
+.ecg-chart {
+  border: 1px solid var(--border); border-radius: 9px;
+  overflow: hidden; margin-bottom: 12px;
+}
+.ecg-chart-inner {
+  background: #111827; padding: 14px;
+}
+.ecg-chart-hdr {
+  font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #6b7280; font-weight: 600; margin-bottom: 10px;
+  display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+}
+.ecg-wave { height: 120px; }
+.ecg-wave svg { width: 100%; height: 100%; }
+.ecg-x-label { text-align: center; font-size: 7.5pt; color: #6b7280; margin-top: 7px; font-family: var(--mono); }
+
+/* Probability distribution (dark, like CardioScan) */
+.prob-dist { border: 1px solid var(--border); border-radius: 9px; overflow: hidden; margin-bottom: 12px; }
+.pd-hdr    { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.pd-title  { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; }
+.pd-body   { padding: 14px; background: #111827; }
+.pd-row    { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+.pd-lbl    { font-size: 9.5pt; color: #9ca3af; width: 65px; }
+.pd-track  { flex: 1; height: 26px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; }
+.pd-fill   { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 10px; }
+.pd-val    { font-size: 11pt; font-weight: 700; color: var(--white); font-family: var(--mono); }
+.pd-pct    { font-size: 12pt; font-weight: 700; font-family: var(--mono); width: 48px; text-align: right; }
+
+/* Signal metrics 4-col */
+.ecg-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+.em-box { border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; text-align: center; }
+.em-lbl { font-size: 7pt; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.em-val { font-size: 13pt; font-weight: 700; font-family: var(--mono); }
+
+
+/* ══════════════════════════════════════════════════════
+   PAGE 6 — RISK + SUMMARY
+══════════════════════════════════════════════════════ */
+.risk-2col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+.risk-card { border: 1px solid; border-radius: 11px; padding: 18px; text-align: center; }
+.rc-lbl    { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; margin-bottom: 10px; }
+.rc-pct    { font-size: 30pt; font-weight: 700; line-height: 1; }
+.rc-lvl    { font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+.rc-track  { height: 5px; border-radius: 3px; background: var(--border); overflow: hidden; margin-top: 12px; }
+.rc-fill   { height: 100%; border-radius: 3px; }
+
+.findings-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 14px; }
+.findings-table th { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 7px 9px; text-align: left; border-bottom: 1px solid var(--border); }
+.findings-table td { padding: 8px 9px; font-size: 9.5pt; border-bottom: 1px solid var(--border); }
+.findings-table tr:last-child td { border-bottom: none; }
+.f-badge { font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 2px 7px; border-radius: 3px; }
+
+.model-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.model-table th { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 6px 9px; text-align: left; border-bottom: 1px solid var(--border); }
+.model-table td { padding: 7px 9px; font-size: 9pt; border-bottom: 1px solid var(--border); overflow-wrap: break-word; word-break: break-word; }
+.model-table tr:last-child td { border-bottom: none; }
+.perf-g { color: var(--green); font-family: var(--mono); font-weight: 700; font-size: 7.8pt; white-space: normal; overflow-wrap: break-word; word-break: break-word; line-height: 1.5; }
+
+.disc-box { background: rgba(232,25,44,0.04); border: 1px solid rgba(232,25,44,0.15); border-radius: 9px; padding: 14px 16px; margin-bottom: 14px; }
+.disc-box h3 { color: var(--red); font-size: 9.5pt; margin-bottom: 7px; }
+.disc-box p  { font-size: 8.5pt; color: var(--muted); line-height: 1.7; overflow-wrap: anywhere; }
+
+.report-footer { text-align: center; color: var(--muted); font-size: 8pt; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); font-family: var(--mono); }
+
+.card, .diag-banner, .scan-grid, .prob-grid, .tc-grid, .seg-stats, .seg-3img, .heatmap-box, .risk-2col, .findings-table, .model-table, .disc-box, .section-conclusion {
+  page-break-inside: avoid;
+  break-inside: avoid-page;
+}
+
+.cover > *,
+.page > *,
+.cp-field,
+.c-showcase-card,
+.s3,
+.si-box,
+.prob-item,
+.tc-row,
+.ss-box,
+.sim-box,
+.pbox,
+.em-box,
+.risk-card,
+.clin-table td,
+.clin-table th,
+.findings-table td,
+.findings-table th,
+.model-table td,
+.model-table th {
+  min-width: 0;
+}
+
+.c-date,
+.c-footer-meta,
+.c-disclaimer,
+.cp-field span,
+.ph-sub,
+.db-desc,
+.disc-box p,
+.sc-text,
+.clin-table td,
+.clin-table th,
+.findings-table td,
+.findings-table th,
+.model-table td,
+.model-table th {
+  overflow-wrap: break-word;
+}
+
+.ph-title,
+.ct,
+.cbadge,
+.ph-badge,
+.pg-num,
+.c-showcase-head,
+.s3-lbl,
+.s3-val,
+.db-name,
+.pi-name,
+.tc-left,
+.tc-badge,
+.ss-lbl,
+.ss-val,
+.sim-cap,
+.pb-lbl,
+.pb-val,
+.ecg-bl-label,
+.pd-lbl,
+.pd-val,
+.em-lbl,
+.em-val,
+.rc-lbl,
+.rc-pct,
+.rc-lvl,
+.disc-box h3,
+.report-footer,
+.c-logo-name {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+</style>
+</head>
+<body>
+
+
+{# ══════════════════════════════════════════════════════
+   PAGE 1 — COVER
+══════════════════════════════════════════════════════ #}
+<div class="cover">
+
+  <div class="cover-top">
+    <div class="c-logo">
+      <div class="c-logo-mark" aria-hidden="true"></div>
+      <div>
+        <div class="c-logo-name">ClinAI</div>
+        <div class="c-logo-sub">Clinical Diagnostic System</div>
+      </div>
+    </div>
+    <div class="c-date">
+      <strong>{{ timestamp }}</strong>
+      Automatically generated report
+    </div>
+  </div>
+
+  <div class="c-hero">
+    <div class="c-tag">AI-Generated Diagnostic Report</div>
+    <div class="c-title">Comprehensive<br>Clinical <span>Analysis</span></div>
+    <div class="c-subtitle">Brain MRI · Cardiac ECG · Cardiovascular Risk Assessment</div>
+
+    <div class="c-patient">
+      <div class="cp-field">
+        <label>Patient Name</label>
+        <span>{{ patient.name }}</span>
+      </div>
+      <div class="cp-field">
+        <label>Report ID</label>
+        <span class="mono-val">{{ report_id }}</span>
+      </div>
+      <div class="cp-field">
+        <label>Date Generated</label>
+        <span>{{ timestamp }}</span>
+      </div>
+      <div class="cp-field">
+        <label>Age / Gender</label>
+        <span>{{ patient.age }} yrs · {{ patient.gender }}</span>
+      </div>
+      <div class="cp-field">
+        <label>Models Used</label>
+        <span>5 AI Models</span>
+      </div>
+      <div class="cp-field">
+        <label>Overall Status</label>
+        <span style="color: {{ overall.color }}; font-weight: 700;">{{ overall.status }}</span>
+      </div>
+    </div>
+
+    <div class="c-showcase">
+      <div class="c-showcase-title">Clinical Report Scope</div>
+      <div class="c-showcase-grid">
+        <div class="c-showcase-card">
+          <div class="c-showcase-head">Neuro Imaging</div>
+          <div class="c-showcase-sub">Tumor detection classification with multi-class probability output.</div>
+        </div>
+        <div class="c-showcase-card">
+          <div class="c-showcase-head">Region Segmentation</div>
+          <div class="c-showcase-sub">Pixel-wise mask and overlay estimation for lesion localization support.</div>
+        </div>
+        <div class="c-showcase-card">
+          <div class="c-showcase-head">Cardio Assessment</div>
+          <div class="c-showcase-sub">ECG anomaly prediction and cardiovascular risk estimation summary.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c-footer">
+    <div class="c-footer-meta">ClinAI · Report {{ report_id }} · {{ timestamp }}</div>
+    <div class="c-disclaimer">For Research Use Only · Not a Certified Medical Device</div>
+  </div>
+
+</div>
+
+
+{# ══════════════════════════════════════════════════════
+   PAGE 2 — EXECUTIVE SUMMARY
+══════════════════════════════════════════════════════ #}
+<div class="page">
+
+  <div class="ph">
+    <div class="ph-left">
+      <div>
+        <div class="ph-title">Executive Summary</div>
+        <div class="ph-sub">Integrated findings across all diagnostic modules</div>
+      </div>
+    </div>
+    <div class="ph-right">
+      <span class="pg-num">02 / 07</span>
+    </div>
+  </div>
+
+  {# Overall status banner #}
+  <div class="overall-banner" style="background: {{ overall.color }}12; border-color: {{ overall.color }}50;">
+    <div class="ob-dot" style="background: {{ overall.color }};"></div>
+    <div>
+      <div class="ob-status" style="color: {{ overall.color }};">{{ overall.status }}</div>
+      <div class="ob-msg">{{ overall.message }}</div>
+    </div>
+  </div>
+
+  {# 3 summary cards #}
+  {% set ecg_color = "#e8192c" if ecg.label == "ABNORMAL" else "#00c97d" %}
+  <div class="sum3">
+    <div class="s3" style="border-color: {{ tumor.severity_color }}55;">
+      <div class="s3-icon">{% if icons is defined and icons.brain is defined and icons.brain %}<img src="data:image/png;base64,{{ icons.brain }}" alt=""/>{% endif %}</div>
+      <div class="s3-lbl">Brain Tumor Detection</div>
+      <div class="s3-val" style="color: {{ tumor.severity_color }};">{{ tumor.tumor_class | title }}</div>
+      <div class="s3-sub" style="color: {{ tumor.severity_color }};">
+        {{ tumor.severity }} severity · {{ (tumor.confidence * 100) | round(2) }}% conf.
+      </div>
+    </div>
+    <div class="s3" style="border-color: {{ ecg_color }}55;">
+      <div class="s3-icon">{% if icons is defined and icons.heart is defined and icons.heart %}<img src="data:image/png;base64,{{ icons.heart }}" alt=""/>{% endif %}</div>
+      <div class="s3-lbl">Cardiac ECG</div>
+      <div class="s3-val" style="color: {{ ecg_color }};">{{ ecg.label }}</div>
+      <div class="s3-sub" style="color: {{ ecg_color }};">
+        {{ (ecg.confidence * 100) | round(1) }}% confidence
+      </div>
+    </div>
+    <div class="s3" style="border-color: {{ heart.color }}55;">
+      <div class="s3-icon">{% if icons is defined and icons.pill is defined and icons.pill %}<img src="data:image/png;base64,{{ icons.pill }}" alt=""/>{% endif %}</div>
+      <div class="s3-lbl">Cardiovascular Risk</div>
+      <div class="s3-val" style="color: {{ heart.color }};">{{ heart.risk_label }}</div>
+      <div class="s3-sub" style="color: {{ stroke.color }};">
+        Stroke: {{ stroke.risk_label }}
+      </div>
+    </div>
+  </div>
+
+  {# Clinical parameters table #}
+  <div class="card">
+    <div class="ct">Patient Clinical Parameters</div>
+    <table class="clin-table">
+      <tr>
+        <th>Parameter</th><th>Value</th>
+        <th>Parameter</th><th>Value</th>
+      </tr>
+      <tr>
+        <td>Resting Blood Pressure</td>
+        <td class="tv">{{ clinical.resting_bp }} mmHg</td>
+        <td>BMI</td>
+        <td class="tv">{{ clinical.bmi }}</td>
+      </tr>
+      <tr>
+        <td>Cholesterol</td>
+        <td class="tv">{{ clinical.cholesterol }} mg/dL</td>
+        <td>Avg. Glucose Level</td>
+        <td class="tv">{{ clinical.avg_glucose }} mg/dL</td>
+      </tr>
+      <tr>
+        <td>Max Heart Rate</td>
+        <td class="tv">{{ clinical.max_hr }} bpm</td>
+        <td>Fasting Blood Sugar</td>
+        <td class="tv">{{ 'Yes (>120)' if clinical.fasting_bs else 'No (≤120)' }}</td>
+      </tr>
+      <tr>
+        <td>Hypertension</td>
+        <td class="tv">{{ 'Yes' if clinical.hypertension else 'No' }}</td>
+        <td>Smoking Status</td>
+        <td class="tv">{{ clinical.smoking_status | title }}</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+
+{# ══════════════════════════════════════════════════════
+   PAGE 3 — BRAIN TUMOR DETECTION
+══════════════════════════════════════════════════════ #}
+<div class="page">
+
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-icon" aria-hidden="true">{% if icons is defined and icons.brain is defined and icons.brain %}<img src="data:image/png;base64,{{ icons.brain }}" alt=""/>{% endif %}</div>
+      <div>
+        <div class="ph-title">Brain Tumor Detection</div>
+        <div class="ph-sub">VGG16 Transfer Learning · BraTS Dataset · 4-Class Classification</div>
+      </div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge">Test Acc: 93.25%</div>
+      <div class="ph-badge">Val: 98.48%</div>
+      <div class="ph-badge">VGG16 · 4 Classes</div>
+      <span class="pg-num">03 / 07</span>
+    </div>
+  </div>
+
+  {# Diagnosis banner (like NeuroDetect) #}
+  <div class="diag-banner"
+       style="background: {{ tumor.severity_color }}08;
+              border-color: {{ tumor.severity_color }};
+              border-left-color: {{ tumor.severity_color }};">
+    <div>
+      <div class="db-label">Diagnosis</div>
+      <div class="db-name" style="color: {{ tumor.severity_color }};">
+        {{ tumor.tumor_class | title }} Tumor
+      </div>
+      <div class="db-desc">
+        {% if tumor.tumor_class == 'glioma' %}
+          Glioma is an aggressive tumour originating in glial cells. Immediate referral to a neuro-oncologist is strongly recommended for further imaging and biopsy evaluation.
+        {% elif tumor.tumor_class == 'meningioma' %}
+          Meningioma arises from the meninges surrounding the brain. Generally slower growing; specialist consultation recommended for monitoring and treatment planning.
+        {% elif tumor.tumor_class == 'pituitary' %}
+          Pituitary tumour detected. Referral to an endocrinologist and neurosurgeon is advised for hormonal assessment and treatment planning.
+        {% else %}
+          No tumour detected. Findings are within normal parameters. Routine follow-up recommended.
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="db-pct" style="color: {{ tumor.severity_color }};">
+        {{ (tumor.confidence * 100) | round(2) }}%
+      </div>
+      <div class="db-conf">Confidence</div>
+    </div>
+  </div>
+
+  {# Scan preview + file info (like NeuroDetect) #}
+  <div class="card">
+    <div class="ct">
+      SCAN PREVIEW · FILE INFORMATION
+      <span class="cbadge" style="color: {{ tumor.severity_color }}; border-color: {{ tumor.severity_color }}50;">
+        {% if tumor.tumor_class != 'notumor' %}▲ ABNORMALITY DETECTED{% else %}✓ NORMAL{% endif %}
+      </span>
+    </div>
+    <div class="scan-grid">
+      <div class="scan-meta-left">
+        <div class="si-box"><div class="si-lbl">File Format</div><div class="si-val si-val-sm">{{ detection_ext | upper }}</div></div>
+        <div class="si-box"><div class="si-lbl">Architecture</div><div class="si-val si-val-sm">VGG16</div></div>
+      </div>
+      <div class="scan-img">
+        <img src="data:image/png;base64,{{ detection_image_b64 }}" alt="Brain MRI Scan"/>
+      </div>
+      <div class="scan-meta-right">
+        <div class="si-box"><div class="si-lbl">Model Input</div><div class="si-val">224 × 224</div></div>
+        <div class="si-box"><div class="si-lbl">Analysis Time</div><div class="si-val">~0.8s</div></div>
+        <div class="si-box"><div class="si-lbl">Classes</div><div class="si-val">4</div></div>
+        <div class="si-box"><div class="si-lbl">Normalise</div><div class="si-val si-val-sm">ImageNet</div></div>
+      </div>
+    </div>
+  </div>
+
+  {# Per-class probability breakdown (like NeuroDetect 2x2 grid) #}
+  <div class="card">
+    <div class="ct">PER-CLASS PROBABILITY BREAKDOWN <span class="cbadge">SOFTMAX OUTPUT</span></div>
+    <div class="prob-grid">
+      {% for cls, prob in tumor.all_probs.items() %}
+      {% set is_pred = (cls == tumor.tumor_class) %}
+      {% set cls_color = tumor.severity_color if is_pred else '#adb5c8' %}
+      <div class="prob-item" style="border-color: {{ cls_color if is_pred else 'var(--border)' }}55;">
+        <div class="pi-name">
+          <span style="color: {{ cls_color }};">{{ cls | upper }}</span>
+          <span style="color: {{ cls_color }};">{{ (prob * 100) | round(2) }}%</span>
+        </div>
+        <div class="pi-track">
+          <div class="pi-fill" style="width: {{ (prob * 100) | round(2) }}%; background: {{ cls_color }};"></div>
+        </div>
+        <div class="pi-pct" style="color: {{ cls_color }};">{{ (prob * 100) | round(2) }}%</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# Tumor classes reference (like NeuroDetect sidebar) #}
+  <div class="card">
+    <div class="ct">TUMOR CLASSES · RISK REFERENCE</div>
+    <div class="tc-grid">
+      <div class="tc-row" style="{{ 'background: rgba(232,25,44,0.04);' if tumor.tumor_class == 'glioma' else '' }}">
+        <div class="tc-left"><div class="tc-dot" style="background: var(--red);"></div>Glioma</div>
+        <div class="tc-badge" style="background: rgba(232,25,44,0.1); color: var(--red);">HIGH RISK</div>
+      </div>
+      <div class="tc-row" style="{{ 'background: rgba(245,158,11,0.04);' if tumor.tumor_class == 'meningioma' else '' }}">
+        <div class="tc-left"><div class="tc-dot" style="background: var(--amber);"></div>Meningioma</div>
+        <div class="tc-badge" style="background: rgba(245,158,11,0.1); color: var(--amber);">MODERATE</div>
+      </div>
+      <div class="tc-row" style="{{ 'background: rgba(124,58,237,0.04);' if tumor.tumor_class == 'pituitary' else '' }}">
+        <div class="tc-left"><div class="tc-dot" style="background: var(--purple);"></div>Pituitary</div>
+        <div class="tc-badge" style="background: rgba(124,58,237,0.1); color: var(--purple);">MONITOR</div>
+      </div>
+      <div class="tc-row" style="{{ 'background: rgba(0,201,125,0.04);' if tumor.tumor_class == 'notumor' else '' }}">
+        <div class="tc-left"><div class="tc-dot" style="background: var(--green);"></div>No Tumor</div>
+        <div class="tc-badge" style="background: rgba(0,201,125,0.1); color: var(--green);">NORMAL</div>
+      </div>
+    </div>
+    <div class="section-conclusion" style="margin-top:10px;">
+      <div class="sc-title">Detection Conclusion</div>
+      <div class="sc-text">
+        Primary MRI classification indicates <strong style="color: {{ tumor.severity_color }};">{{ tumor.tumor_class | title }}</strong>
+        with confidence <strong>{{ (tumor.confidence * 100) | round(2) }}%</strong>. Correlate with segmentation and full clinical context.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+{# ══════════════════════════════════════════════════════
+   PAGE 4 — TUMOR SEGMENTATION
+══════════════════════════════════════════════════════ #}
+<div class="page">
+
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-icon" aria-hidden="true">{% if icons is defined and icons.map is defined and icons.map %}<img src="data:image/png;base64,{{ icons.map }}" alt=""/>{% endif %}</div>
+      <div>
+        <div class="ph-title">Tumor Segmentation Analysis</div>
+        <div class="ph-sub">U-Net + VGG16 Encoder · LGG Kaggle Dataset · Binary Segmentation</div>
+      </div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge">Val IoU: 71.1%</div>
+      <div class="ph-badge">Val Dice: 78.2%</div>
+      <div class="ph-badge">Test IoU: 73.9%</div>
+      <div class="ph-badge">Test Dice: 81.2%</div>
+      <span class="pg-num">04 / 07</span>
+    </div>
+  </div>
+
+  {% if segmentation %}
+
+    {# Diagnosis banner #}
+    <div class="diag-banner" style="background: {{ 'rgba(232,25,44,0.05)' if segmentation.tumor_detected else 'rgba(0,201,125,0.05)' }}; border-color: {{ '#e8192c' if segmentation.tumor_detected else '#00c97d' }}; border-left-color: {{ '#e8192c' if segmentation.tumor_detected else '#00c97d' }};">
+      <div>
+        <div class="db-label">Segmentation Diagnosis</div>
+        <div class="db-name" style="color: {{ '#e8192c' if segmentation.tumor_detected else '#00c97d' }};">
+          {{ 'Tumor Detected' if segmentation.tumor_detected else 'No Tumor Region Found' }}
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 8pt; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; text-align: right; margin-bottom: 4px;">Tumor Coverage</div>
+        <div class="db-pct" style="color: {{ '#e8192c' if segmentation.tumor_detected else '#00c97d' }};">
+          {{ segmentation.coverage_percent }}%
+        </div>
+      </div>
+    </div>
+
+    {# Stats 3-col #}
+    <div class="seg-stats">
+      <div class="ss-box">
+        <div class="ss-lbl">Tumor Coverage</div>
+        <div class="ss-val red">{{ segmentation.coverage_percent }}%</div>
+        <div class="ss-sub">of total scan area</div>
+      </div>
+      <div class="ss-box">
+        <div class="ss-lbl">Tumor Pixels</div>
+        <div class="ss-val">{{ segmentation.mask_pixel_count | int }}</div>
+        <div class="ss-sub">/ 65,536 total px</div>
+      </div>
+      <div class="ss-box">
+        <div class="ss-lbl">Parameters</div>
+        <div class="ss-val" style="font-size: 16pt;">23.7M</div>
+        <div class="ss-sub">U-Net + VGG16</div>
+      </div>
+    </div>
+
+    {# Pixel bar #}
+    <div class="px-bar-label">
+      <span>Tumor Pixels</span>
+      <strong>{{ segmentation.mask_pixel_count | int }} / 65,536 px</strong>
+    </div>
+    <div class="px-bar-track">
+      <div class="px-bar-fill" style="width: {{ [segmentation.coverage_percent, 100] | min }}%;"></div>
+    </div>
+
+    {# Three images: MRI · Mask · Overlay #}
+    <div class="card">
+      <div class="ct">SEGMENTATION OUTPUT — MRI · MASK · OVERLAY</div>
+      <div class="seg-3img">
+        <div class="sim-box">
+          <div class="sim-img">
+            {% if segmentation.seg_image_b64 %}
+              <img src="data:image/png;base64,{{ segmentation.seg_image_b64 }}" alt="MRI Scan"/>
+            {% else %}
+              <img src="data:image/png;base64,{{ detection_image_b64 }}" alt="MRI Scan"/>
+            {% endif %}
+          </div>
+          <div class="sim-cap">MRI Scan</div>
+        </div>
+        <div class="sim-box sim-mask">
+          <div class="sim-img" style="background: #f8f0f0;">
+            {% if segmentation.mask_b64 %}
+              <img src="data:image/png;base64,{{ segmentation.mask_b64 }}" alt="Tumor Mask"/>
+            {% elif segmentation.overlay_b64 %}
+              <img src="data:image/png;base64,{{ segmentation.overlay_b64 }}" alt="Tumor Mask"/>
+            {% else %}
+              <span style="color: #aaa; font-size: 11px; font-family: monospace;">No tumor</span>
+            {% endif %}
+          </div>
+          <div class="sim-cap">Tumor Mask</div>
+        </div>
+        <div class="sim-box">
+          <div class="sim-img">
+            {% if segmentation.overlay_b64 %}
+              <img src="data:image/png;base64,{{ segmentation.overlay_b64 }}" alt="Overlay"/>
+            {% else %}
+              <span style="color: #aaa; font-size: 11px; font-family: monospace;">No overlay</span>
+            {% endif %}
+          </div>
+          <div class="sim-cap">Overlay</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">MODEL CONFIDENCE HEATMAP</div>
+      <div class="heatmap-box">
+        {% if segmentation.heatmap_b64 %}
+          <img src="data:image/png;base64,{{ segmentation.heatmap_b64 }}" alt="Confidence Heatmap"/>
+        {% elif segmentation.overlay_b64 %}
+          <img src="data:image/png;base64,{{ segmentation.overlay_b64 }}" alt="Confidence Heatmap Fallback"/>
+        {% else %}
+          <div style="text-align:center;">
+            <div style="font-family: var(--mono); color:#9ca3af; font-size:9pt;">Confidence map unavailable</div>
+            <div style="color:#6b7280; font-size:8pt; margin-top:4px;">Expected range: 0.0 to 1.0 (low to high confidence)</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Model performance (like NeuroScan sidebar) #}
+    <div class="page-break"></div>
+
+    <div class="card">
+      <div class="ct">MODEL PERFORMANCE</div>
+      <div class="perf-2x2">
+        <div class="pbox"><div class="pb-lbl">Val IoU</div><div class="pb-val">71.1<span style="font-size:12pt">%</span></div><div class="pb-sub">Segmentation</div></div>
+        <div class="pbox"><div class="pb-lbl">Val Dice</div><div class="pb-val">78.2<span style="font-size:12pt">%</span></div><div class="pb-sub">Segmentation</div></div>
+        <div class="pbox"><div class="pb-lbl">Test IoU</div><div class="pb-val">73.9<span style="font-size:12pt">%</span></div><div class="pb-sub">Generalisation</div></div>
+        <div class="pbox"><div class="pb-lbl">Test Dice</div><div class="pb-val">81.2<span style="font-size:12pt">%</span></div><div class="pb-sub">Generalisation</div></div>
+      </div>
+    </div>
+
+    <div class="iou-note">{{ segmentation.iou_note }} — Coverage and mask estimates are subject to model confidence threshold (sigmoid > 0.5).</div>
+    <div class="section-conclusion">
+      <div class="sc-title">Segmentation Conclusion</div>
+      <div class="sc-text">
+        Segmentation indicates estimated tumor coverage of <strong>{{ segmentation.coverage_percent }}%</strong>
+        ({{ segmentation.mask_pixel_count | int }} pixels). Review MRI scan, tumor mask and overlay together for clinical interpretation.
+      </div>
+    </div>
+
+  {% else %}
+
+    <div class="card" style="text-align: center; padding: 32px;">
+      <div style="font-size: 12pt; font-weight: 600; margin-bottom: 6px;">Segmentation Scan Not Provided</div>
+      <div style="font-size: 9pt; color: var(--muted);">Upload a TIF-format LGG-style scan to enable pixel-level tumor region mapping and coverage analysis.</div>
+    </div>
+
+    <div class="card">
+      <div class="ct">MODEL PERFORMANCE (REFERENCE)</div>
+      <div class="perf-2x2">
+        <div class="pbox"><div class="pb-lbl">Val IoU</div><div class="pb-val">71.1<span style="font-size:12pt">%</span></div><div class="pb-sub">Segmentation</div></div>
+        <div class="pbox"><div class="pb-lbl">Val Dice</div><div class="pb-val">78.2<span style="font-size:12pt">%</span></div><div class="pb-sub">Segmentation</div></div>
+        <div class="pbox"><div class="pb-lbl">Test IoU</div><div class="pb-val">73.9<span style="font-size:12pt">%</span></div><div class="pb-sub">Generalisation</div></div>
+        <div class="pbox"><div class="pb-lbl">Test Dice</div><div class="pb-val">81.2<span style="font-size:12pt">%</span></div><div class="pb-sub">Generalisation</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ct">HOW SEGMENTATION WORKS</div>
+      <div class="hiw-row"><span class="hiw-step">Step 1</span><span class="hiw-val">TIFF loaded → uint8 normalised</span></div>
+      <div class="hiw-row"><span class="hiw-step">Step 2</span><span class="hiw-val">Resize to 256 × 256 · ImageNet normalise</span></div>
+      <div class="hiw-row"><span class="hiw-step">Step 3</span><span class="hiw-val">VGG16 encoder extracts hierarchical features</span></div>
+      <div class="hiw-row"><span class="hiw-step">Step 4</span><span class="hiw-val">U-Net decoder reconstructs spatial probability map</span></div>
+      <div class="hiw-row"><span class="hiw-step">Step 5</span><span class="hiw-val">Sigmoid → binary mask at threshold 0.5</span></div>
+    </div>
+
+  {% endif %}
+
+</div>
+
+
+{# ══════════════════════════════════════════════════════
+   PAGE 5 — ECG ANALYSIS
+══════════════════════════════════════════════════════ #}
+<div class="page">
+
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-icon" aria-hidden="true">{% if icons is defined and icons.heart is defined and icons.heart %}<img src="data:image/png;base64,{{ icons.heart }}" alt=""/>{% endif %}</div>
+      <div>
+        <div class="ph-title">Cardiac ECG Analysis</div>
+        <div class="ph-sub">CNN + LSTM · PTB Diagnostic ECG Dataset · Binary Classification</div>
+      </div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge ph-badge-g">● F1: 99.46%</div>
+      <div class="ph-badge ph-badge-b">● AUC: 99.99%</div>
+      <div class="ph-badge">CNN + LSTM</div>
+      <span class="pg-num">05 / 07</span>
+    </div>
+  </div>
+
+  {# ECG result banner (like CardioScan) #}
+  {% set ecg_color = "#e8192c" if ecg.label == "ABNORMAL" else "#00c97d" %}
+  <div class="ecg-banner" style="background: {{ ecg_color }}08; border-color: {{ ecg_color }}50;">
+    <div>
+      <div class="ecg-bl-label" style="color: {{ ecg_color }};">{{ ecg.label }} HEARTBEAT</div>
+      <div class="ecg-bl-desc" style="color: {{ ecg_color }};">
+        {% if ecg.label == 'ABNORMAL' %}
+          Cardiac abnormality detected — specialist review strongly recommended
+        {% else %}
+          No cardiac abnormality detected — routine monitoring advised
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <div class="ecg-bl-pct" style="color: {{ ecg_color }};">{{ (ecg.confidence * 100) | round(1) }}%</div>
+      <div class="ecg-bl-conf" style="color: {{ ecg_color }};">Confidence</div>
+    </div>
+  </div>
+
+  {# Dark ECG waveform chart (like CardioScan) #}
+  <div class="ecg-chart">
+    <div class="ecg-chart-inner">
+      <div class="ecg-chart-hdr">
+        <span>ECG WAVEFORM · 187 TIME STEPS</span>
+        <span style="color: {{ ecg_color }};">{{ ecg.label }} · P(ABNORMAL): {{ (ecg.confidence * 100) | round(2) }}%</span>
+      </div>
+      <div class="ecg-wave">
+        {% if ecg.waveform_b64 is defined and ecg.waveform_b64 %}
+        <img src="data:image/png;base64,{{ ecg.waveform_b64 }}" alt="ECG Waveform"
+             style="width:100%; height:120px; object-fit:contain; display:block; background:#0b1020;"/>
+        {% else %}
+        <div style="display:flex; align-items:center; justify-content:center; height:120px; background:#0b1020; border-radius:5px;">
+          <div style="text-align:center;">
+            <div style="font-family:var(--mono); color:#4b5563; font-size:9pt;">Waveform image not available</div>
+            <div style="color:#374151; font-size:8pt; margin-top:4px;">{{ ecg.label }} · Confidence: {{ (ecg.confidence * 100) | round(1) }}%</div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# Probability distribution (dark, like CardioScan) #}
+  <div class="prob-dist">
+    <div class="pd-hdr">
+      <div class="pd-title">PROBABILITY DISTRIBUTION</div>
+      <div class="cbadge">PTB Dataset · Normal / Abnormal</div>
+    </div>
+    <div class="pd-body">
+      <div class="pd-row">
+        <div class="pd-lbl" style="color: #9ca3af;">Abnormal</div>
+        <div class="pd-track">
+          <div class="pd-fill" style="width: {{ (ecg.confidence * 100) | round(1) }}%; background: rgba(232,25,44,0.75);">
+            {% if ecg.confidence > 0.1 %}
+            <div class="pd-val">{{ (ecg.confidence * 100) | round(1) }}%</div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="pd-pct" style="color: var(--red);">{{ (ecg.confidence * 100) | round(1) }}%</div>
+      </div>
+      <div class="pd-row">
+        <div class="pd-lbl" style="color: #9ca3af;">Normal</div>
+        <div class="pd-track">
+          <div class="pd-fill" style="width: {{ ((1 - ecg.confidence) * 100) | round(1) }}%; background: rgba(0,201,125,0.6);">
+            {% if (1 - ecg.confidence) > 0.1 %}
+            <div class="pd-val">{{ ((1 - ecg.confidence) * 100) | round(1) }}%</div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="pd-pct" style="color: var(--green);">{{ ((1 - ecg.confidence) * 100) | round(1) }}%</div>
+      </div>
+    </div>
+  </div>
+
+  {# Signal metrics #}
+  <div class="ecg-metrics">
+    <div class="em-box">
+      <div class="em-lbl">Classification</div>
+      <div class="em-val" style="color: {{ ecg_color }};">{{ ecg.label }}</div>
+    </div>
+    <div class="em-box">
+      <div class="em-lbl">Abnormality Prob.</div>
+      <div class="em-val" style="color: {{ ecg_color }};">{{ (ecg.confidence * 100) | round(2) }}%</div>
+    </div>
+    <div class="em-box">
+      <div class="em-lbl">Signal Length</div>
+      <div class="em-val">187 steps</div>
+    </div>
+    <div class="em-box">
+      <div class="em-lbl">Decision Threshold</div>
+      <div class="em-val">0.50</div>
+    </div>
+  </div>
+
+  {# How it works (like CardioScan sidebar) #}
+  <div class="card" style="margin-top: 11px;">
+    <div class="ct">HOW IT WORKS</div>
+    <div class="hiw-row"><span class="hiw-step">Step 1</span><span class="hiw-val">Parse 187 time steps from CSV input</span></div>
+    <div class="hiw-row"><span class="hiw-step">Step 2</span><span class="hiw-val">Conv1D blocks — local feature extraction (64→128→256)</span></div>
+    <div class="hiw-row"><span class="hiw-step">Step 3</span><span class="hiw-val">LSTM (128 units) — temporal pattern modelling</span></div>
+    <div class="hiw-row"><span class="hiw-step">Step 4</span><span class="hiw-val">Sigmoid → probability output</span></div>
+    <div class="hiw-row"><span class="hiw-step">Step 5</span><span class="hiw-val">Threshold at 0.50 → Normal / Abnormal</span></div>
+  </div>
+
+  <div class="section-conclusion">
+    <div class="sc-title">ECG Conclusion</div>
+    <div class="sc-text">
+      ECG analysis indicates <strong style="color: {{ ecg_color }};">{{ ecg.label }}</strong> rhythm with
+      <strong>{{ (ecg.confidence * 100) | round(1) }}%</strong> confidence. Interpret in conjunction with cardiovascular risk metrics.
+    </div>
+  </div>
+
+</div>
+
+
+{# ══════════════════════════════════════════════════════
+   PAGE 6 — CARDIOVASCULAR RISK + SUMMARY
+══════════════════════════════════════════════════════ #}
+<div class="page">
+
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-icon" style="background: rgba(245,158,11,0.12);" aria-hidden="true">{% if icons is defined and icons.pill is defined and icons.pill %}<img src="data:image/png;base64,{{ icons.pill }}" alt=""/>{% endif %}</div>
+      <div>
+        <div class="ph-title">Cardiovascular Risk &amp; Summary</div>
+        <div class="ph-sub">Logistic Regression · Heart Disease Prediction · Stroke Risk Assessment</div>
+      </div>
+    </div>
+    <div class="ph-right">
+      <span class="pg-num">06 / 07</span>
+    </div>
+  </div>
+
+  {# Risk cards #}
+  <div class="risk-2col">
+    <div class="risk-card" style="background: {{ heart.color }}08; border-color: {{ heart.color }}50;">
+      <div class="rc-lbl">Heart Disease Risk</div>
+      <div class="rc-pct" style="color: {{ heart.color }};">{{ (heart.probability * 100) | round(1) }}%</div>
+      <div class="rc-lvl" style="color: {{ heart.color }};">{{ heart.risk_label }}</div>
+      <div class="rc-track">
+        <div class="rc-fill" style="width: {{ (heart.probability * 100) | round(1) }}%; background: {{ heart.color }};"></div>
+      </div>
+    </div>
+    <div class="risk-card" style="background: {{ stroke.color }}08; border-color: {{ stroke.color }}50;">
+      <div class="rc-lbl">Stroke Risk</div>
+      <div class="rc-pct" style="color: {{ stroke.color }};">{{ (stroke.probability * 100) | round(1) }}%</div>
+      <div class="rc-lvl" style="color: {{ stroke.color }};">{{ stroke.risk_label }}</div>
+      <div class="rc-track">
+        <div class="rc-fill" style="width: {{ (stroke.probability * 100) | round(1) }}%; background: {{ stroke.color }};"></div>
+      </div>
+    </div>
+  </div>
+
+  {# Clinical input table #}
+  <div class="card">
+    <div class="ct">CLINICAL INPUT PARAMETERS USED FOR PREDICTION</div>
+    <table class="clin-table">
+      <tr><th>Parameter</th><th>Value</th><th>Parameter</th><th>Value</th></tr>
+      <tr>
+        <td>Age</td><td class="tv">{{ patient.age }} years</td>
+        <td>BMI</td><td class="tv">{{ clinical.bmi }}</td>
+      </tr>
+      <tr>
+        <td>Resting Blood Pressure</td><td class="tv">{{ clinical.resting_bp }} mmHg</td>
+        <td>Avg. Glucose Level</td><td class="tv">{{ clinical.avg_glucose }} mg/dL</td>
+      </tr>
+      <tr>
+        <td>Cholesterol</td><td class="tv">{{ clinical.cholesterol }} mg/dL</td>
+        <td>Max Heart Rate</td><td class="tv">{{ clinical.max_hr }} bpm</td>
+      </tr>
+      <tr>
+        <td>Hypertension</td><td class="tv">{{ 'Yes' if clinical.hypertension else 'No' }}</td>
+        <td>Smoking Status</td><td class="tv">{{ clinical.smoking_status | title }}</td>
+      </tr>
+    </table>
+  </div>
+
+  {# Key findings table #}
+  <div style="font-size: 11pt; font-weight: 700; margin-bottom: 9px;">Key Findings</div>
+  <table class="findings-table">
+    <tr><th>Module</th><th>Finding</th><th>Severity / Risk</th></tr>
+    <tr>
+      <td>Brain MRI — Detection</td>
+      <td>{{ tumor.tumor_class | title }} · {{ (tumor.confidence * 100) | round(2) }}% confidence</td>
+      <td>
+        <span class="f-badge" style="background: {{ tumor.severity_color }}15; color: {{ tumor.severity_color }};">
+          {{ tumor.severity }}
+        </span>
+      </td>
+    </tr>
+    {% if segmentation %}
+    <tr>
+      <td>Brain MRI — Segmentation</td>
+      <td>Coverage {{ segmentation.coverage_percent }}% · {{ segmentation.mask_pixel_count | int }} pixels</td>
+      <td><span class="f-badge" style="background: rgba(245,158,11,0.1); color: var(--amber);">ESTIMATED</span></td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td>Cardiac ECG</td>
+      <td>{{ ecg.label }} heartbeat · {{ (ecg.confidence * 100) | round(1) }}% confidence</td>
+      <td>
+        <span class="f-badge" style="background: {{ ecg_color }}15; color: {{ ecg_color }};">
+          {{ 'ATTENTION' if ecg.label == 'ABNORMAL' else 'CLEAR' }}
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td>Heart Disease Risk</td>
+      <td>{{ (heart.probability * 100) | round(1) }}% probability</td>
+      <td><span class="f-badge" style="background: {{ heart.color }}15; color: {{ heart.color }};">{{ heart.level }}</span></td>
+    </tr>
+    <tr>
+      <td>Stroke Risk</td>
+      <td>{{ (stroke.probability * 100) | round(1) }}% probability (threshold 0.0202)</td>
+      <td><span class="f-badge" style="background: {{ stroke.color }}15; color: {{ stroke.color }};">{{ stroke.level }}</span></td>
+    </tr>
+  </table>
+
+  <div class="section-conclusion">
+    <div class="sc-title">Cardiovascular Conclusion</div>
+    <div class="sc-text">
+      Combined profile indicates heart risk <strong style="color: {{ heart.color }};">{{ (heart.probability * 100) | round(1) }}%</strong>
+      and stroke risk <strong style="color: {{ stroke.color }};">{{ (stroke.probability * 100) | round(1) }}%</strong>.
+      Clinical follow-up and physician-led management are recommended according to risk band.
+    </div>
+  </div>
+
+</div>
+
+
+{# ══════════════════════════════════════════════════════
+   PAGE 7 — MODEL PERFORMANCE + LEGAL
+══════════════════════════════════════════════════════ #}
+<div class="page">
+
+  <div class="ph">
+    <div class="ph-left">
+      <div class="ph-icon" style="background: rgba(26,86,255,0.10);" aria-hidden="true">{% if icons is defined and icons.chart is defined and icons.chart %}<img src="data:image/png;base64,{{ icons.chart }}" alt=""/>{% endif %}</div>
+      <div>
+        <div class="ph-title">Model Performance &amp; Compliance</div>
+        <div class="ph-sub">Reference metrics and legal note</div>
+      </div>
+    </div>
+    <div class="ph-right">
+      <span class="pg-num">07 / 07</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">AI MODEL PERFORMANCE REFERENCE</div>
+    <table class="model-table">
+      <colgroup><col style="width:22%"/><col style="width:22%"/><col style="width:16%"/><col style="width:40%"/></colgroup>
+      <tr><th>Model</th><th>Architecture</th><th>Dataset</th><th>Performance</th></tr>
+      <tr><td>Tumor Detection</td><td>VGG16</td><td>BraTS</td><td class="perf-g">Test Acc: 93.25% · Val: 98.48%</td></tr>
+      <tr><td>Tumor Segmentation</td><td>U-Net + VGG16</td><td>LGG Kaggle</td><td class="perf-g">Val IoU: 71.1% · Dice: 78.2%</td></tr>
+      <tr><td>ECG Classification</td><td>CNN + LSTM</td><td>PTB ECG</td><td class="perf-g">F1: 99.46% · AUC: 99.99%</td></tr>
+      <tr><td>Heart Disease</td><td>Logistic Regression</td><td>UCI Heart</td><td class="perf-g">~85% accuracy</td></tr>
+      <tr><td>Stroke Risk</td><td>Logistic Regression + SMOTE</td><td>Kaggle Stroke</td><td class="perf-g">Threshold: 0.30</td></tr>
+    </table>
+  </div>
+
+  <div class="disc-box">
+    <h3>Important Legal Disclaimer</h3>
+    <p>This report has been generated by an artificial intelligence system for <strong>research and educational purposes only</strong>. It is not a certified medical device and must not be used as a substitute for professional medical diagnosis, advice, or treatment. The AI models have been trained on specific datasets and may not generalise to all patient populations. All findings must be reviewed and validated by a qualified medical professional before any clinical decision is made. The developers of ClinAI accept no liability for clinical outcomes arising from the use of this report.</p>
+  </div>
+
+  <div class="report-footer">
+    ClinAI · Report {{ report_id }} · Generated {{ timestamp }} · For research use only · Not for clinical deployment
+  </div>
+
+  <div class="section-conclusion">
+    <div class="sc-title">Final Note</div>
+    <div class="sc-text">Thank you for using ClinAI. Please have this report reviewed by a qualified medical professional before any treatment decision.</div>
+  </div>
+
+</div>
+
+</body>
+</html>
