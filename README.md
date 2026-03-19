@@ -42,7 +42,7 @@ This is not a Jupyter notebook demo. It is a deployable AI backend designed to m
 
 | Platform | Link |
 |---|---|
-| 🤗 Hugging Face Space (Live App) | [huggingface.co/spaces/muhammedpanchla/clinai-flagship](https://huggingface.co/spaces/muhammedpanchla/clinai-flagship) |
+| 🤗 Hugging Face Space (Live App) | [muhammedpanchla-clinai-flagship.hf.space](https://muhammedpanchla-clinai-flagship.hf.space/#) |
 | 📄 Example Generated PDF Report | [pdflink.to/clinai](https://pdflink.to/clinai/) |
 | 🧪 Model Weights Repository | [huggingface.co/muhammedpanchla/ClinAI](https://huggingface.co/muhammedpanchla/ClinAI/tree/main) |
 
@@ -411,7 +411,7 @@ Content-Type: multipart/form-data
 
 This repo is also deployed as a Hugging Face Docker Space:
 
-🔗 **[huggingface.co/spaces/muhammedpanchla/clinai-flagship](https://huggingface.co/spaces/muhammedpanchla/clinai-flagship)**
+🔗 **[muhammedpanchla-clinai-flagship.hf.space](https://muhammedpanchla-clinai-flagship.hf.space/#)**
 
 - Configured via the YAML header in this README (`sdk: docker`, `app_port: 7860`)
 - WeasyPrint system libraries (Cairo, Pango, GDK-Pixbuf) installed in the Dockerfile
